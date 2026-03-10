@@ -5,33 +5,33 @@
 
 <style>
 body{
-font-family: Arial;
-text-align:center;
-background:#eef7f2;
+  font-family: Arial;
+  text-align:center;
+  background:#eef7f2;
 }
 
 .container{
-background:white;
-padding:30px;
-margin:40px auto;
-width:400px;
-border-radius:10px;
-box-shadow:0 0 10px rgba(0,0,0,0.1);
+  background:white;
+  padding:30px;
+  margin:40px auto;
+  width:400px;
+  border-radius:10px;
+  box-shadow:0 0 10px rgba(0,0,0,0.1);
 }
 
 button{
-padding:10px 20px;
-background:green;
-color:white;
-border:none;
-border-radius:5px;
-cursor:pointer;
+  padding:10px 20px;
+  background:green;
+  color:white;
+  border:none;
+  border-radius:5px;
+  cursor:pointer;
 }
 
 .result{
-margin-top:20px;
-font-size:20px;
-font-weight:bold;
+  margin-top:20px;
+  font-size:20px;
+  font-weight:bold;
 }
 </style>
 </head>
@@ -42,233 +42,167 @@ font-weight:bold;
 <p>Certification for companies committed to human rights and the environment</p>
 
 <h3>Company Login</h3>
-
 <input type="text" id="empresa" placeholder="Company name">
-
 <button onclick="login()">Enter</button>
-
 <p id="empresaLogada"></p>
 
 <div class="container">
-
 <h3>Admin Panel</h3>
 
 <h4>Schedule Visit</h4>
-
 <h4>Confirm Site Visit</h4>
-
 <button onclick="confirmarVisita()">Confirm Visit Completed</button>
-
 <p id="visitConfirmStatus"></p>
 
 <input type="date" id="adminVisitDate">
-
 <button onclick="marcarVisita()">Confirm Visit Date</button>
-
 <p id="adminVisitStatus"></p>
 
 <input type="password" id="adminPass" placeholder="Admin password">
 <button onclick="loginAdmin()">Admin Login</button>
-
 <p id="adminStatus"></p>    
 
 <h3>Company self-evaluation</h3>
-
 <label><input type="checkbox" id="human"> Respect human rights</label><br><br>
-
 <label><input type="checkbox" id="labor"> Fair working conditions</label><br><br>
-
 <label><input type="checkbox" id="env"> Environmental responsibility</label><br><br>
-
 <button onclick="avaliar()">Submit Evaluation</button>
-
 <div class="result" id="resultado"></div>
 
 <h3>Request verification visit</h3>
-
 <button onclick="solicitarVisita()">Request Visit</button>
-
 <p id="visitStatus"></p>
-
 </div>
 
 <h3>Certified Companies</h3>
 <ul id="certifiedList"></ul>
 
 <script>
-
-let admin = false
+let admin = false;
 
 function login(){
-
-let nome = document.getElementById("empresa").value
-
-localStorage.setItem("empresa", nome)
-
-document.getElementById("empresaLogada").innerText =
-"Company logged in: " + nome
-
+  let nome = document.getElementById("empresa").value;
+  localStorage.setItem("empresa", nome);
+  document.getElementById("empresaLogada").innerText = "Company logged in: " + nome;
 }
 
 function confirmarVisita(){
-
-if(!admin){
-alert("Admin access required")
-return
-}
-
-let passou = localStorage.getItem("evaluationPassed")
-let empresa = localStorage.getItem("empresa")
-
-if(passou !== "true"){
-alert("Company has not passed the evaluation yet")
-return
-}
-
-let lista = JSON.parse(localStorage.getItem("certified")) || []
-
-if(!lista.includes(empresa)){
-lista.push(empresa)
-localStorage.setItem("certified", JSON.stringify(lista))
-}
-
-document.getElementById("visitConfirmStatus").innerText =
-"Visit confirmed. Company is now WE HERE Certified."
-
-mostrarCertificadas()
-
+  if(!admin){
+    alert("Admin access required");
+    return;
+  }
+  let passou = localStorage.getItem("evaluationPassed");
+  let empresa = localStorage.getItem("empresa");
+  if(passou !== "true"){
+    alert("Company has not passed the evaluation yet");
+    return;
+  }
+  let lista = JSON.parse(localStorage.getItem("certified")) || [];
+  if(!lista.includes(empresa)){
+    lista.push(empresa);
+    localStorage.setItem("certified", JSON.stringify(lista));
+  }
+  document.getElementById("visitConfirmStatus").innerText =
+    "Visit confirmed. Company is now WE HERE Certified.";
+  mostrarCertificadas();
 }
 
 function loginAdmin(){
-
-let senha = document.getElementById("adminPass").value
-
-if(senha === "wehere123"){
-admin = true
-document.getElementById("adminStatus").innerText = "Admin access granted"
-mostrarCertificadas()
-}else{
-document.getElementById("adminStatus").innerText = "Wrong password"
-}
-
+  let senha = document.getElementById("adminPass").value;
+  if(senha === "wehere123"){
+    admin = true;
+    document.getElementById("adminStatus").innerText = "Admin access granted";
+    mostrarCertificadas();
+  } else {
+    document.getElementById("adminStatus").innerText = "Wrong password";
+  }
 }
 
 function marcarVisita(){
-
-if(!admin){
-alert("Admin access required")
-return
-}
-
-let data = document.getElementById("adminVisitDate").value
-
-if(!data){
-alert("Select a date")
-return
-}
-
-localStorage.setItem("visitDate", data)
-
-document.getElementById("adminVisitStatus").innerText =
-"Visit scheduled for: " + data
-
+  if(!admin){
+    alert("Admin access required");
+    return;
+  }
+  let data = document.getElementById("adminVisitDate").value;
+  if(!data){
+    alert("Select a date");
+    return;
+  }
+  localStorage.setItem("visitDate", data);
+  document.getElementById("adminVisitStatus").innerText =
+    "Visit scheduled for: " + data;
 }
 
 function solicitarVisita(){
-
-let empresa = localStorage.getItem("empresa")
-
-if(!empresa){
-alert("Please login first")
-return
+  let empresa = localStorage.getItem("empresa");
+  if(!empresa){
+    alert("Please login first");
+    return;
+  }
+  localStorage.setItem("visitRequest", empresa);
+  document.getElementById("visitStatus").innerText =
+    "Verification visit requested. Our team will schedule it.";
 }
 
-localStorage.setItem("visitRequest", empresa)
+function avaliar() {
+  let score = 0;
+  if(document.getElementById("human").checked) score += 35;
+  if(document.getElementById("labor").checked) score += 35;
+  if(document.getElementById("env").checked) score += 30;
 
-document.getElementById("visitStatus").innerText =
-"Verification visit requested. Our team will schedule it."
+  let empresa = localStorage.getItem("empresa");
+  if(!empresa){
+    alert("Please login your company first");
+    return;
+  }
 
-}
+  let texto = "WE HERE SCORE: " + score + "/100";
+  if(score >= 70){
+    texto += "<br>🟡 Evaluation passed. Waiting for verification visit.";
+    localStorage.setItem("evaluationPassed", "true");
+  } else {
+    texto += "<br>❌ Certification not achieved";
+  }
 
-function avaliar(){
+  document.getElementById("resultado").innerHTML = texto;
 
-let score = 0
-
-if(document.getElementById("human").checked){
-score += 35
-}
-
-if(document.getElementById("labor").checked){
-score += 35
-}
-
-if(document.getElementById("env").checked){
-score += 30
-}
-
-let empresa = localStorage.getItem("empresa")
-
-if(!empresa){
-alert("Please login your company first")
-return
-}
-
-let texto = "WE HERE SCORE: " + score + "/100"
-
-if(score >= 70){
-
-texto += "<br>🟡 Evaluation passed. Waiting for verification visit."
-
-localStorage.setItem("evaluationPassed", "true")
-
-}else{
-texto += "<br>❌ Certification not achieved"
-}
-
-document.getElementById("resultado").innerHTML = texto
-
+  // ✅ Envia os dados para o Apps Script
+  fetch("https://script.google.com/macros/s/AKfycbz44xwO7IIWwmTaNbnHVtxuT0ZteXD2JIZ5Bo7wncmfMdmCz9jY4QKpF92aVQX/exec", {
+    method: "POST",
+    body: new URLSearchParams({
+      empresa: empresa,
+      score: score
+    })
+  })
+  .then(res => res.text())
+  .then(data => console.log("Response do Apps Script:", data))
+  .catch(err => console.error(err));
 }
 
 function mostrarCertificadas(){
+  let lista = JSON.parse(localStorage.getItem("certified")) || [];
+  let ul = document.getElementById("certifiedList");
+  ul.innerHTML = "";
 
-let lista = JSON.parse(localStorage.getItem("certified")) || []
+  lista.forEach(function(empresa, index){
+    let li = document.createElement("li");
+    li.innerText = "🏅 " + empresa;
 
-let ul = document.getElementById("certifiedList")
-
-ul.innerHTML = ""
-
-lista.forEach(function(empresa, index){
-
-let li = document.createElement("li")
-li.innerText = "🏅 " + empresa
-
-if(admin){
-
-let botao = document.createElement("button")
-botao.innerText = "Remove"
-
-botao.onclick = function(){
-
-lista.splice(index,1)
-
-localStorage.setItem("certified", JSON.stringify(lista))
-
-mostrarCertificadas()
-
+    if(admin){
+      let botao = document.createElement("button");
+      botao.innerText = "Remove";
+      botao.onclick = function(){
+        lista.splice(index,1);
+        localStorage.setItem("certified", JSON.stringify(lista));
+        mostrarCertificadas();
+      };
+      li.appendChild(botao);
+    }
+    ul.appendChild(li);
+  });
 }
 
-li.appendChild(botao)
-
-}
-
-ul.appendChild(li)
-
-})
-
-}
-
-mostrarCertificadas()
-
+mostrarCertificadas();
 </script>
 
 </body>
