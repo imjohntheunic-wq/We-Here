@@ -1,278 +1,145 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt">
 <head>
-<title>WE HERE</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title></title>
+    <style>
+        :root { --primary: #2c3e50; --accent: #27ae60; --gold: #f1c40f; }
+        body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
 
-<style>
-body{
-font-family: Arial;
-text-align:center;
-background:#eef7f2;
-}
+    /*FUNDO PROFISSIONAL */
+    background-image: url('fundo.jpg');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed; 
 
-.container{
-background:white;
-padding:30px;
-margin:40px auto;
-width:400px;
-border-radius:10px;
-box-shadow:0 0 10px rgba(0,0,0,0.1);
-}
+    /*CENTRALIZAÇÃO SEM ERRO 
+    display: grid;
+    place-items: center; */
+        }
 
-button{
-padding:10px 20px;
-background:green;
-color:white;
-border:none;
-border-radius:5px;
-cursor:pointer;
-}
-
-.result{
-margin-top:20px;
-font-size:20px;
-font-weight:bold;
-}
-</style>
+        .section { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin-bottom: 30px; }
+        h2 { color: var(--primary); border-bottom: 2px solid var(--accent); padding-bottom: 10px; }
+        input { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; }
+        .checkbox-group { text-align: left; background: #f9f9f9; padding: 15px; border-radius: 8px; margin: 15px 0; }
+        .checkbox-item { display: block; margin: 10px 0; cursor: pointer; }
+        .btn { background: var(--accent); color: white; border: none; padding: 15px; font-size: 16px; border-radius: 6px; cursor: pointer; width: 100%; transition: 0.3s; }
+        .btn:hover { background: #219150; }
+        .btn:disabled { background: #ccc; cursor: not-allowed; }
+        #lista-certificados { display: flex; flex-wrap: wrap; gap: 15px; justify-content: center; margin-top: 20px; }
+        .medalha { background: white; border: 2px solid var(--gold); padding: 15px 25px; border-radius: 30px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.1); display: flex; align-items: center; }
+        .medalha::before { content: "🏅 "; margin-right: 8px; }
+        .logo-site{
+          width: 500px;
+          height: auto;
+          margin: 20px;
+          position: absolute;
+          top: 0;
+          left: 0;
+        }
+    </style>
 </head>
-
 <body>
-
-<h1>WE HERE</h1>
-<p>Certification for companies committed to human rights and the environment</p>
-
-<h3>Company Login</h3>
-
-<input type="text" id="empresa" placeholder="Company name">
-
-<button onclick="login()">Enter</button>
-
-<p id="empresaLogada"></p>
-
-<div class="container">
-
-<h3>Admin Panel</h3>
-
-<h4>Schedule Visit</h4>
-
-<h4>Confirm Site Visit</h4>
-
-<button onclick="confirmarVisita()">Confirm Visit Completed</button>
-
-<p id="visitConfirmStatus"></p>
-
-<input type="date" id="adminVisitDate">
-
-<button onclick="marcarVisita()">Confirm Visit Date</button>
-
-<p id="adminVisitStatus"></p>
-
-<input type="password" id="adminPass" placeholder="Admin password">
-<button onclick="loginAdmin()">Admin Login</button>
-
-<p id="adminStatus"></p>    
-
-<h3>Company self-evaluation</h3>
-
-<label><input type="checkbox" id="human"> Respect human rights</label><br><br>
-
-<label><input type="checkbox" id="labor"> Fair working conditions</label><br><br>
-
-<label><input type="checkbox" id="env"> Environmental responsibility</label><br><br>
-
-<button onclick="avaliar()">Submit Evaluation</button>
-
-<div class="result" id="resultado"></div>
-
-<h3>Request verification visit</h3>
-
-<button onclick="solicitarVisita()">Request Visit</button>
-
-<p id="visitStatus"></p>
-
-</div>
-
-<h3>Certified Companies</h3>
-<ul id="certifiedList"></ul>
-
-<script>
-
-let admin = false
-
-function login(){
-
-let nome = document.getElementById("empresa").value
-
-localStorage.setItem("empresa", nome)
-
-document.getElementById("empresaLogada").innerText =
-"Company logged in: " + nome
-
-}
-
-function confirmarVisita(){
-
-if(!admin){
-alert("Admin access required")
-return
-}
-
-let passou = localStorage.getItem("evaluationPassed")
-let empresa = localStorage.getItem("empresa")
-
-if(passou !== "true"){
-alert("Company has not passed the evaluation yet")
-return
-}
-
-let lista = JSON.parse(localStorage.getItem("certified")) || []
-
-if(!lista.includes(empresa)){
-lista.push(empresa)
-localStorage.setItem("certified", JSON.stringify(lista))
-}
-
-document.getElementById("visitConfirmStatus").innerText =
-"Visit confirmed. Company is now WE HERE Certified."
-
-mostrarCertificadas()
-
-}
-
-function loginAdmin(){
-
-let senha = document.getElementById("adminPass").value
-
-if(senha === "wehere123"){
-admin = true
-document.getElementById("adminStatus").innerText = "Admin access granted"
-mostrarCertificadas()
-}else{
-document.getElementById("adminStatus").innerText = "Wrong password"
-}
-
-}
-
-function marcarVisita(){
-
-if(!admin){
-alert("Admin access required")
-return
-}
-
-let data = document.getElementById("adminVisitDate").value
-
-if(!data){
-alert("Select a date")
-return
-}
-
-localStorage.setItem("visitDate", data)
-
-document.getElementById("adminVisitStatus").innerText =
-"Visit scheduled for: " + data
-
-}
-
-function solicitarVisita(){
-
-let empresa = localStorage.getItem("empresa")
-
-if(!empresa){
-alert("Please login first")
-return
-}
-
-localStorage.setItem("visitRequest", empresa)
-
-document.getElementById("visitStatus").innerText =
-"Verification visit requested. Our team will schedule it."
-
-}
-
-function avaliar() {
-  let score = 0;
-
-  if(document.getElementById("human").checked){
-    score += 35;
-  }
-  if(document.getElementById("labor").checked){
-    score += 35;
-  }
-  if(document.getElementById("env").checked){
-    score += 30;
-  }
-
-  let empresa = localStorage.getItem("empresa");
-  if(!empresa){
-    alert("Please login your company first");
-    return;
-  }
-
-  let texto = "WE HERE SCORE: " + score + "/100";
-  if(score >= 70){
-    texto += "<br>🟡 Evaluation passed. Waiting for verification visit.";
-    localStorage.setItem("evaluationPassed", "true");
-  } else {
-    texto += "<br>❌ Certification not achieved";
-  }
-  document.getElementById("resultado").innerHTML = texto;
-
-  // ✅ Enviando para o Apps Script
-  fetch("https://script.google.com/macros/s/AKfycbz44xwO7IIWwmTaNbnHVtxuT0ZteXD2JIZ5Bo7wncmfMdmCz9jY4QKpF92aVQX/exec", {
-    method: "POST",
-    body: new URLSearchParams({
-      empresa: empresa,
-      score: score
-    })
-  })
-  .then(res => res.text())
-  .then(data => console.log("Response do Apps Script:", data))
-  .catch(err => console.error(err));
-}
-
-function mostrarCertificadas(){
-
-let lista = JSON.parse(localStorage.getItem("certified")) || []
-
-let ul = document.getElementById("certifiedList")
-
-ul.innerHTML = ""
-
-lista.forEach(function(empresa, index){
-
-let li = document.createElement("li")
-li.innerText = "🏅 " + empresa
-
-if(admin){
-
-let botao = document.createElement("button")
-botao.innerText = "Remove"
-
-botao.onclick = function(){
-
-lista.splice(index,1)
-
-localStorage.setItem("certified", JSON.stringify(lista))
-
-mostrarCertificadas()
-
-}
-
-li.appendChild(botao)
-
-}
-
-ul.appendChild(li)
-
-})
-
-}
-
-mostrarCertificadas()
-
-</script>
-
+    <header style="width: 100%; padding: 60px 0 20px 0; text-align: center;">
+        <h1 style="margin: 0; color: var(--primary); font-size: 80px; letter-spacing: 15px; font-weight: 900;">
+            WE HERE
+        </h1>
+        <p style="color: var(--accent); font-weight: bold; letter-spacing: 2px; margin-top: 10px;">
+            CERTIFICAÇÃO OFICIAL
+        </p>
+    </header>
+
+    <div style="display: flex; flex-direction: column; align-items: center; width: 100%;">
+        
+        <div class="section" style="width: 90%; max-width: 500px;">
+            <h2>1. Requisite sua Visita</h2>
+            <form id="formRequisicao">
+                <input type="text" id="comp_nome" placeholder="Nome da Empresa" required>
+                <input type="email" id="comp_email" placeholder="E-mail de contacto" required>
+                <input type="tel" id="comp_tel" placeholder="Telefone / WhatsApp" required>
+
+                <div class="checkbox-group">
+                    <h3>Autoavaliação</h3>
+                    <label class="checkbox-item"><input type="checkbox" class="pauta"> Gestão de Resíduos</label>
+                    <label class="checkbox-item"><input type="checkbox" class="pauta"> Energia Renovável</label>
+                    <label class="checkbox-item"><input type="checkbox" class="pauta"> Apoio à Comunidade</label>
+                    <label class="checkbox-item"><input type="checkbox" class="pauta"> Acessibilidade</label>
+                </div>
+                
+                <button type="submit" class="btn" id="btnEnviar">Enviar e Solicitar Visita</button>
+            </form>
+        </div>
+
+        <div class="section" style="width: 90%; max-width: 500px;">
+            <h2>Empresas Certificadas ✅</h2>
+            <div id="lista-certificados">A carregar lista...</div>
+        </div>
+    </div>
+    <script>
+        // --- COLA O TEU LINK AQUI ABAIXO ---
+        const URL_API = "https://script.google.com/macros/s/AKfycby81s0Bs3OcaF4xqxiKzzJVsUjfvtuEaQHjSETeS4uHveXfpYPuImNFGVLgIlbVSHkwfQ/exec"; 
+
+        // 1. ENVIAR DADOS PARA A PLANILHA
+        document.getElementById('formRequisicao').onsubmit = async function(e) {
+            e.preventDefault();
+            const btn = document.getElementById('btnEnviar');
+            btn.disabled = true;
+            btn.innerText = "A enviar...";
+
+            const dados = {
+                nome: document.getElementById('comp_nome').value,
+                email: document.getElementById('comp_email').value,
+                telefone: document.getElementById('comp_tel').value,
+                score: document.querySelectorAll('.pauta:checked').length
+            };
+
+            try {
+                await fetch(URL_API, {
+                    method: 'POST',
+                    mode: 'no-cors', // Necessário para Google Apps Script
+                    body: JSON.stringify(dados)
+                });
+                alert("Sucesso! Os seus dados foram enviados para a nossa planilha. Aguarde o contacto para a visita.");
+                this.reset();
+            } catch (err) {
+                alert("Erro ao enviar. Tente novamente.");
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "Enviar e Solicitar Visita";
+            }
+        };
+
+        // 2. LER EMPRESAS APROVADAS DA PLANILHA
+        async function carregarCertificados() {
+            const lista = document.getElementById('lista-certificados');
+            try {
+                const res = await fetch(URL_API);
+                const empresas = await res.json();
+                
+                if (empresas.length === 0) {
+                    lista.innerHTML = "<p>Nenhuma empresa certificada ainda.</p>";
+                    return;
+                }
+
+                lista.innerHTML = "";
+                empresas.forEach(nome => {
+                    const div = document.createElement('div');
+                    div.className = 'medalha';
+                    div.innerText = nome;
+                    lista.appendChild(div);
+                });
+            } catch (err) {
+                lista.innerHTML = "Erro ao carregar lista.";
+            }
+        }
+
+        // Carrega a lista assim que abrir o site
+        carregarCertificados();
+    </script>
 </body>
 </html>
-
